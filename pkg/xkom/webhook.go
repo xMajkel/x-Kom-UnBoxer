@@ -51,7 +51,7 @@ func (acc *Account) SendWebhook(boxId string, box BoxItem, webhookUrl string) er
 	promoPercent := int((box.Item.CatalogPrice - box.BoxPrice) / box.Item.CatalogPrice * 100)
 
 	embed.AddField("Standard Price", fmt.Sprintf("%.2f zł", box.Item.CatalogPrice), true)
-	embed.AddField("Promotion", fmt.Sprintf("-%.2f zł | **-%d**%%", box.PromotionGain.Value, promoPercent), true)
+	embed.AddField("Discount", fmt.Sprintf("-%.2f zł | **-%d**%%", box.PromotionGain.Value, promoPercent), true)
 	embed.AddField("Box Price", fmt.Sprintf("__**%.2f zł**__", box.BoxPrice), true)
 	embed.AddField("Rating", fmt.Sprintf("%.2f/6 %s (%d)", box.ProductCommentsStatistics.AverageRating, AvgRatingToEmojis(box.ProductCommentsStatistics.AverageRating), box.ProductCommentsStatistics.TotalCount), true)
 	embed.AddField("Email", fmt.Sprintf("||%s||", acc.Email), true)

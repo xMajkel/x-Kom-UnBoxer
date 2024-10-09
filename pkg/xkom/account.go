@@ -1,10 +1,10 @@
 package xkom
 
 import (
-	"crypto/tls"
 	"errors"
-	"net/http"
-	"net/url"
+
+	tls_client "github.com/bogdanfinn/tls-client"
+	"github.com/bogdanfinn/tls-client/profiles"
 )
 
 type Account struct {
@@ -14,7 +14,7 @@ type Account struct {
 	AccessToken  string
 	RefreshToken string
 
-	HttpClient *http.Client
+	HttpClient tls_client.HttpClient
 }
 
 // NewAccount creates new Account struct containing account information
@@ -29,27 +29,26 @@ type Account struct {
 //   - error: nil if error didn't occur
 func NewAccount(email, password, proxy string) (*Account, error) {
 	if email == "" || password == "" {
-		return &Account{}, errors.New("no email or password provided")
+		return nil, errors.New("no email or password provided")
 	}
 
-	//Force HTTP/1.1 protocol
-	transport := &http.Transport{
-		TLSNextProto: make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
+	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(),
+		tls_client.WithClientProfile(profiles.Safari_IOS_18_0),
+		tls_client.WithForceHttp1(),
+	)
+
+	if err != nil {
+		return nil, err
 	}
 
 	//Set proxy
 	if proxy != "" {
-		proxyURL, err := url.Parse(proxy)
+		err := client.SetProxy(proxy)
 		if err != nil {
-			return &Account{}, err
+			return nil, err
 		}
-
-		transport.Proxy = http.ProxyURL(proxyURL)
 	}
 
-	client := &http.Client{
-		Transport: transport,
-	}
 	return &Account{
 		Email:      email,
 		Password:   password,

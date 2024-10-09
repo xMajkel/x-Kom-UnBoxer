@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
+
+	fhttp "github.com/bogdanfinn/fhttp"
 
 	"github.com/xMajkel/x-kom-unboxer/pkg/utility"
 	"github.com/xMajkel/x-kom-unboxer/pkg/utility/config"
@@ -27,22 +28,22 @@ type ErrorResponse struct {
 // GetBoxes returns list of all boxes
 func (acc *Account) GetBoxes() ([]Boxes, error) {
 	var err error
-	var req *http.Request
-	var resp *http.Response
+	var req *fhttp.Request
+	var resp *fhttp.Response
 	var respJson []Boxes
 
 	url := "https://mobileapi.x-kom.pl/api/v1/xkom/Box/Boxes"
 
-	req, err = http.NewRequest(http.MethodGet, url, nil)
+	req, err = fhttp.NewRequest(fhttp.MethodGet, url, nil)
 	if err != nil {
 		return []Boxes{}, err
 	}
 
 	req.Header = map[string][]string{
 		"x-api-key":       {config.GlobalConfig.ApiKey},
-		"clientversion":   {"1.98.3"},
+		"clientversion":   {"1.103.0"},
 		"time-zone":       {"UTC"},
-		"User-Agent":      {"xkom_prod/1.98.3"},
+		"User-Agent":      {"x-kom_prod/20240916.1 CFNetwork/1496.0.7 Darwin/23.5.0"},
 		"authorization":   {"Bearer " + acc.AccessToken},
 		"accept-encoding": {"gzip"},
 	}
@@ -125,8 +126,8 @@ type BoxItem struct {
 //   - error: nil if error didn't occur
 func (acc *Account) RollBox(id string) (BoxItem, error) {
 	var err error
-	var req *http.Request
-	var resp *http.Response
+	var req *fhttp.Request
+	var resp *fhttp.Response
 	var respJson BoxItem
 
 	if acc.AccessToken == "" {
@@ -135,16 +136,16 @@ func (acc *Account) RollBox(id string) (BoxItem, error) {
 
 	url := "https://mobileapi.x-kom.pl/api/v1/xkom/Box/" + id + "/Roll"
 
-	req, err = http.NewRequest(http.MethodPost, url, strings.NewReader(""))
+	req, err = fhttp.NewRequest(fhttp.MethodPost, url, strings.NewReader(""))
 	if err != nil {
 		return respJson, err
 	}
 
 	req.Header = map[string][]string{
 		"x-api-key":       {config.GlobalConfig.ApiKey},
-		"clientversion":   {"1.98.3"},
+		"clientversion":   {"1.103.0"},
 		"time-zone":       {"UTC"},
-		"User-Agent":      {"xkom_prod/1.98.3"},
+		"User-Agent":      {"x-kom_prod/20240916.1 CFNetwork/1496.0.7 Darwin/23.5.0"},
 		"authorization":   {"Bearer " + acc.AccessToken},
 		"accept-encoding": {"gzip"},
 	}

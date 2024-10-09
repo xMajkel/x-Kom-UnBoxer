@@ -3,11 +3,13 @@ package xkom
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 	"strings"
 
+	fhttp "github.com/bogdanfinn/fhttp"
+
 	"github.com/xMajkel/x-kom-unboxer/pkg/utility"
+	"github.com/xMajkel/x-kom-unboxer/pkg/utility/config"
 	"github.com/xMajkel/x-kom-unboxer/pkg/utility/shared"
 )
 
@@ -47,21 +49,25 @@ type LoginResponse struct {
 
 func (acc *Account) postLogin(payload url.Values) error {
 	var err error
-	var req *http.Request
-	var resp *http.Response
+	var req *fhttp.Request
+	var resp *fhttp.Response
 	var respJson LoginResponse
 
 	url := "https://auth.x-kom.pl/xkom/Token"
 
-	req, err = http.NewRequest(http.MethodPost, url, strings.NewReader(payload.Encode()))
+	req, err = fhttp.NewRequest(fhttp.MethodPost, url, strings.NewReader(payload.Encode()))
 	if err != nil {
 		return err
 	}
 
 	req.Header = map[string][]string{
-		"Content-Type": {"application/x-www-form-urlencoded"},
-		"User-Agent":   {"xkom_prod/1.98.3"},
-		"Host":         {"auth.x-kom.pl"},
+		"Host":            {"auth.x-kom.pl"},
+		"User-Agent":      {"x-kom_prod/20240916.1 CFNetwork/1496.0.7 Darwin/23.5.0"},
+		"x-api-key":       {config.GlobalConfig.ApiKey},
+		"clientversion":   {"1.103.0"},
+		"time-zone":       {"UTC"},
+		"Content-Type":    {"application/x-www-form-urlencoded"},
+		"accept-encoding": {"gzip"},
 	}
 
 	resp, err = acc.HttpClient.Do(req)
